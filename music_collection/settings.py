@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-y4mdhm)w28+gp0ynr_zjj5pl8@dz-9ho@+@2t6#2*sy_g!+c++'
 
 MONGO_DATABASE_NAME = 'music_records'
-MONGO_URI = 'mongodb://localhost:27017/'
+MONGO_URI = os.getenv('MONGO_URI')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
