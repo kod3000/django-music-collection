@@ -1,0 +1,13 @@
+<html>
+<head>
+    <title>Insert Albums</title>
+</head>
+<body>
+    <h2>Insert Albums</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>
