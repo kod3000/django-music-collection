@@ -30,7 +30,7 @@ def insert_array(request):
                         # this is not an album
                         collection_unknown.insert_one({"unknown": item, "orgin": "albums"})
                         continue
-                    does_exist = collection.find_one({"album": item})
+                    does_exist = collection.find_one({"album.id": item['id']})
                     if does_exist is None:
                         collection.insert_one({"album": item})
                         count += 1
@@ -39,7 +39,7 @@ def insert_array(request):
                     if item['numberOfTracks'] is None:
                         # this is not an album
                         continue
-                    does_exist = collection.find_one({"album": item})
+                    does_exist = collection.find_one({"album.id": item['id']})
                     if does_exist is None:
                         collection.insert_one({"album": item})
                 client.close()
