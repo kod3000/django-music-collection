@@ -3,6 +3,9 @@
     <title>Insert Albums</title>
 </head>
 <body>
+    <p>Number of Queued albums: {{ albums_queued }}</p>
+    <p>Number of known albums: {{ albums_known }}</p>
+
     <h2>Insert Albums</h2>
     <form method="post">
         {% csrf_token %}

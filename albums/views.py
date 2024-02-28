@@ -48,5 +48,17 @@ def insert_array(request):
             except ConnectionFailure:
                 form.add_error(None, 'Database connection failed. Please try again later.')
     else:
+        client = MongoClient(settings.MONGO_URI)
+        db = client[settings.MONGO_DATABASE_NAME]
+        collection_known = db['known_albums']
+        collection_albums = db['_queue_up_albums']
+        # Count all documents in each collection
+        known_count = collection_known.count_documents({})
+        albums_count = collection_albums.count_documents({})
         form = ArrayForm()
-    return render(request, 'albums/insert_albums.html', {'form': form})
+        context = {
+            'form': form,
+            'albums_known' : known_count,
+            'albums_queued' : albums_count
+        }
+    return render(request, 'albums/insert_albums.html', context)
