@@ -26,7 +26,7 @@ MONGO_DATABASE_NAME = 'music_records'
 MONGO_URI = os.getenv('MONGO_URI')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG')
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS')
 
