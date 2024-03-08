@@ -6,6 +6,22 @@ from .forms import ArrayForm
 from pymongo import MongoClient
 from django.conf import settings
 from pymongo.errors import ConnectionFailure
+import os
+def get_albums(skip=0, limit=25):
+    albums = []
+    try:
+        client = MongoClient(settings.MONGO_URI)
+        db = client[settings.MONGO_DATABASE_NAME]
+        collection = db['_queue_up_albums']
+        latest_albums = collection.find().sort([('_id', 1)]).skip(skip).limit(limit)
+        for album in latest_albums:
+            album['image'] = (os.environ.get('image_static_resource') +
+                              album['album']['cover'].replace('-', '/')) + '/80x80.jpg'
+            albums.append(album)
+        client.close()
+        return albums
+    except ConnectionFailure:
+        return albums
 
 def insert_array(request):
     if request.method == 'POST':
@@ -60,6 +76,8 @@ def insert_array(request):
     context = {
         'form': form,
         'albums_known' : known_count,
-        'albums_queued' : albums_count
+        'albums_queued' : albums_count,
+        'albums': get_albums(0,25),
+        'next_up': get_albums(25,25)
     }
     return render(request, 'albums/insert_albums.html', context)
