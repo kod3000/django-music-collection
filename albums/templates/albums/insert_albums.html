@@ -38,13 +38,20 @@
   </div>
       <section class="flex" >
         {% for data in albums %}
+            {% if data.processing %}
+            <div class="p-1 bg-green-200 flex-inline justify-center ">
+                <img src="{{ data.image }}" width="80px" title="{{ data.album.title }} [{{ data.album.numberOfTracks }}]" />
+                <small style="font-size:8px" >{{ data.album.title }}</small>
+            </div>
+                {% else %}
             <div class="p-1"><img src="{{ data.image }}" width="30px" title="{{ data.album.title }} [{{ data.album.numberOfTracks }}]" /></div>
+            {% endif %}
         {% endfor %}
     </section>
   </div>
   <div class="mx-auto max-w-2xl mt-8 w-full text-center">
   <div class="px-4 sm:px-0">
-    <h3 class="text-base font-semibold w-full text-left leading-7 text-gray-300">Next 25 to be processed... </h3>
+    <h3 class="text-base font-semibold w-full text-left leading-7 text-gray-300">Next to be processed... </h3>
   </div>
   <section>
     <ul role="list" class="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4 xl:gap-x-8">
