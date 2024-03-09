@@ -2,7 +2,9 @@
 import json
 
 from django.shortcuts import render, redirect
-from .forms import ArrayForm
+from django.contrib import messages
+
+from .forms import AlbumDataForm
 from pymongo import MongoClient
 from django.conf import settings
 from pymongo.errors import ConnectionFailure
@@ -25,7 +27,7 @@ def get_albums(skip=0, limit=25):
 
 def insert_array(request):
     if request.method == 'POST':
-        form = ArrayForm(request.POST)
+        form = AlbumDataForm(request.POST)
         if form.is_valid():
             array_data = form.cleaned_data['array_data']
             try:
@@ -59,12 +61,12 @@ def insert_array(request):
                     if does_exist is None:
                         collection.insert_one({"album": item})
                 client.close()
-                form.add_error(None, f'{count} Albums inserted successfully.')
+                messages.success(request, f'{count} Albums inserted successfully.')
                 # return redirect('success_url')  # Redirect to a new URL for success
             except ConnectionFailure:
-                form.add_error(None, 'Database connection failed. Please try again later.')
+                messages.error(request, 'Database connection failed. Please try again later.')
     else:
-        form = ArrayForm()
+        form = AlbumDataForm()
 
     client = MongoClient(settings.MONGO_URI)
     db = client[settings.MONGO_DATABASE_NAME]
