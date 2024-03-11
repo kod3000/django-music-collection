@@ -17,8 +17,11 @@ def get_albums(skip=0, limit=25):
         collection = db['_queue_up_albums']
         latest_albums = collection.find().sort([('_id', 1)]).skip(skip).limit(limit)
         for album in latest_albums:
-            album['image'] = (os.environ.get('image_static_resource') +
-                              album['album']['cover'].replace('-', '/')) + '/80x80.jpg'
+            if album['album']['cover'] is not None:
+                album['image'] = (os.environ.get('image_static_resource') +
+                                  album['album']['cover'].replace('-', '/')) + '/80x80.jpg'
+            else:
+                album['image'] = os.environ.get('image_static_local') + '/old-record.webp'
             albums.append(album)
         client.close()
         return albums
