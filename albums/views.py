@@ -40,31 +40,38 @@ def insert_array(request):
                 if not isinstance(new_array, list):
                     form.add_error(None, 'The input was not a list.')
                     return render(request, 'albums/insert_albums.html', {'form': form})
-                # Insert into MongoDB
                 client = MongoClient(settings.MONGO_URI)
                 db = client[settings.MONGO_DATABASE_NAME]
                 collection_unknown = db['_queue_up_unknown_data']
-                collection = db['_queue_up_albums']
-                count = 0
+                collection_queue = db['_queue_up_albums']
+                collection_known = db['known_albums']
+                count_queue_inserts = 0
                 for item in new_array:
                     if item['numberOfTracks'] is None:
-                        # this is not an album
+                        # this is not an album 
                         collection_unknown.insert_one({"unknown": item, "orgin": "albums"})
                         continue
-                    does_exist = collection.find_one({"album.id": item['id']})
+                    # check known albums first for id ..
+                    does_exist = collection_known.find_one({"album.id": item['id']})
+                    if does_exist :
+                        continue
+                    # check queue ...
+                    does_exist = collection_queue.find_one({"album.id": item['id']})
                     if does_exist is None:
-                        collection.insert_one({"album": item})
-                        count += 1
-                collection = db['known_albums']
+                        collection_queue.insert_one({"album": item})
+                        count_queue_inserts += 1
+                # TODO: Why is this even split? / this logic can be moved into the top loop
+                count_known_inserts = 0
                 for item in new_array:
                     if item['numberOfTracks'] is None:
                         # this is not an album
                         continue
-                    does_exist = collection.find_one({"album.id": item['id']})
+                    does_exist = collection_known.find_one({"album.id": item['id']})
                     if does_exist is None:
-                        collection.insert_one({"album": item})
+                        collection_known.insert_one({"album": item})
+                        count_known_inserts += 1 # if the known album is checked first this number wont matter anymore
                 client.close()
-                messages.success(request, f'{count} Albums inserted successfully.')
+                messages.success(request, f'{count_queue_inserts} Albums inserted successfully.')
                 # return redirect('success_url')  # Redirect to a new URL for success
             except ConnectionFailure:
                 messages.error(request, 'Database connection failed. Please try again later.')
