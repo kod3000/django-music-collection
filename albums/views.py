@@ -68,7 +68,7 @@ def insert_array(request):
                         continue
                     does_exist = collection_known.find_one({"album.id": item['id']})
                     if does_exist is None:
-                        collection_known.insert_one({"album": item})
+                        collection_known.insert_one({"album": item, "tracks_known": False, "related_known" : False})
                         count_known_inserts += 1 # if the known album is checked first this number wont matter anymore
                 client.close()
                 messages.success(request, f'{count_queue_inserts} Albums inserted successfully.')
